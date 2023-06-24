@@ -1,8 +1,14 @@
-variable "name" {
-    Description = "name of deployer"
+variable "hosted_zone" {
+    Description = "Hosted Zone where you want to your new site to live"
     type = string
-    default = "Anonymous :)"
 }
+
+variable "instance_type" {
+    description = "instance type for your ec2 instance"
+    type = string
+    default = "t2.micro"  
+}
+
 variable "environment" {
   description = "environment name"
   type = string
@@ -12,11 +18,15 @@ variable "environment" {
     error_message = "The environment must be \"dev\", \"test\", or \"prod\"."
   }
 }
+
 variable "project" {
-    Description = "project name"
-    type = string
+  
 }
-variable "orgCode" {
-    Description = "Org code for billing"
-    type = string
+
+variable "OrgCode" {
+  
+}
+
+variable "vpc_id" {
+  
 }
