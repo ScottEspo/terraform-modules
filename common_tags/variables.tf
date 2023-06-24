@@ -13,10 +13,10 @@ variable "environment" {
   }
 }
 variable "project" {
-    Description = "project name"
+    description = "project name"
     type = string
 }
 variable "orgCode" {
-    Description = "Org code for billing"
+    description = "Org code for billing"
     type = string
 }
