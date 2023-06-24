@@ -1,5 +1,5 @@
 variable "hosted_zone" {
-    Description = "Hosted Zone where you want to your new site to live"
+    description = "Hosted Zone where you want to your new site to live"
     type = string
 }
 
