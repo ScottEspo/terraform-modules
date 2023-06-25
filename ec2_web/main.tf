@@ -64,13 +64,13 @@ resource "aws_lb_listener" "front_end" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.test.arn
+    target_group_arn = aws_lb_target_group.tf_demo_tg.arn
   }
 }
 
 ## Attach instance created above to the Target Group so that traffic will be forwarded to it
-resource "aws_lb_target_group_attachment" "test" {
-  target_group_arn = aws_lb_target_group.test.arn
+resource "aws_lb_target_group_attachment" "tf_demo_tg_attachment" {
+  target_group_arn = aws_lb_target_group.tf_demo_tg.arn
   target_id        = aws_instance.web_server.id
   port             = 80
 }

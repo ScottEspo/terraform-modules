@@ -21,7 +21,12 @@ data "aws_route53_zone" "selected" {
 
 data "aws_subnets" "internal_subnets" {
   filter {
-    name   = "vpc-8d1a53f7"
+    name   = "vpc-id"
     values = [var.vpc_id]
   }
+}
+
+data "aws_subnet" "subnet_ids" {
+  for_each = toset(data.aws_subnets.internal_subnets.ids)
+  id       = each.value
 }

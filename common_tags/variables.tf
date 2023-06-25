@@ -1,11 +1,11 @@
 variable "name" {
-    description = "name of deployer"
-    type = string
-    default = "Anonymous :)"
+  description = "name of deployer"
+  type        = string
+  default     = "Anonymous :)"
 }
 variable "environment" {
   description = "environment name"
-  type = string
+  type        = string
 
   validation {
     condition     = contains(["dev", "test", "prod"], var.environment)
@@ -13,10 +13,10 @@ variable "environment" {
   }
 }
 variable "project" {
-    description = "project name"
-    type = string
+  description = "project name"
+  type        = string
 }
 variable "orgCode" {
-    description = "Org code for billing"
-    type = string
+  description = "Org code for billing"
+  type        = string
 }
