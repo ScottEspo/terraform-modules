@@ -18,7 +18,7 @@ EOF
     Name         = local.instance_name
     Environment  = var.environment
     Project      = var.project
-    OrgCode      = var.OrgCode
+    OrgCode      = var.orgCode
     DeployedFrom = path.cwd
   }
 }
@@ -36,7 +36,7 @@ resource "aws_lb" "tf-demo-lb" {
     Name         = local.load_balancer_name
     Environment  = var.environment
     Project      = var.project
-    OrgCode      = var.OrgCode
+    OrgCode      = var.orgCode
     DeployedFrom = path.cwd
   }
 }
