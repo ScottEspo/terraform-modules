@@ -23,7 +23,7 @@ variable "project" {
   
 }
 
-variable "OrgCode" {
+variable "orgCode" {
   
 }
 
