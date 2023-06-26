@@ -30,3 +30,9 @@ variable "orgCode" {
 variable "vpc_id" {
   type = string
 }
+
+variable "tags" {
+  description = "tags to be passed in"
+  type        = map(string)
+  default     = {}
+}

@@ -14,13 +14,9 @@ systemctl start httpd.service
 systemctl enable httpd.service
 echo "WooHoo... Terraform running in ${var.environment}" > /var/www/html/index.html
 EOF
-  tags = {
-    Name         = local.instance_name
-    Environment  = var.environment
-    Project      = var.project
-    OrgCode      = var.orgCode
-    DeployedFrom = path.cwd
-  }
+  tags = merge(var.tags, {
+    Name = local.instance_name
+  })
 }
 
 ## Creating an Application Load Balancer
@@ -32,13 +28,9 @@ resource "aws_lb" "tf-demo-lb" {
   enable_deletion_protection = false
   subnets                    = local.subnets
   security_groups            = [aws_security_group.lb_sg.id]
-  tags = {
-    Name         = local.load_balancer_name
-    Environment  = var.environment
-    Project      = var.project
-    OrgCode      = var.orgCode
-    DeployedFrom = path.cwd
-  }
+  tags = merge(var.tags, {
+    Name = local.load_balancer_name
+  })
 }
 
 ## Creating a Target Group 
