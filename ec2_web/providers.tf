@@ -37,7 +37,7 @@ provider "aws" {
 # }
 
 provider "datadog" {
-  api_key = "1d5d25aa319c0aba8d249a8b3f94afd3"
-  app_key = "0be60fc47a9f7e6a0e0361b020f42de6668a46b0"
+  api_key = var.datadog_api_key
+  app_key = var.datadog_app_key
 
 }
