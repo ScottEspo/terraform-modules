@@ -22,11 +22,21 @@ data "aws_route53_zone" "selected" {
 data "aws_subnets" "internal_subnets" {
   filter {
     name   = "vpc-id"
-    values = [var.vpc_id]
+    values = [data.aws_vpc.vpc.id]
   }
 }
 
 data "aws_subnet" "subnet_ids" {
   for_each = toset(data.aws_subnets.internal_subnets.ids)
   id       = each.value
+}
+data "aws_vpc" "vpc" {
+  default = true
+}
+
+data "aws_route53_zone" "parent_zone" {
+  count        = var.environment == "dev" ? 1 : 0
+  provider     = aws.aws_prod
+  name         = "${var.alternate_hosted_zone}."
+  private_zone = false
 }

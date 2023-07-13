@@ -2,17 +2,22 @@
 ## https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/instance
 
 resource "aws_instance" "web_server" {
-  #ami           = "ami-025d0fe6e3762da5a" 
-  ami             = data.aws_ami.amazon.id
-  instance_type   = var.instance_type
-  security_groups = [aws_security_group.web_server_sg.name]
-  user_data       = <<-EOF
+  count                = var.environment != "prod" ? 1 : 2 ### Adding some logic to create multiple instances if PROD (many ways to achieve similar results)
+  ami                  = data.aws_ami.amazon.id
+  instance_type        = var.instance_type
+  security_groups      = [aws_security_group.web_server_sg.name]
+  iam_instance_profile = aws_iam_instance_profile.tf_demo_instance_profile.name
+  user_data            = <<-EOF
 #!/bin/bash
 yum update -y
 yum install -y httpd.x86_64
+sudo amazon-linux-extras install epel -y
 systemctl start httpd.service
 systemctl enable httpd.service
-echo "WooHoo... Terraform running in ${var.environment}" > /var/www/html/index.html
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+export tfservername='curl http://169.254.169.254/latest/meta-data/hostname'
+export instancetype='curl http://169.254.169.254/latest/meta-data/instance-type'
+echo "<h1>WooHoo... Terraform! (deployed to ${var.environment}) running on a $($instancetype) named $($tfservername) </h1>" > /var/www/html/index.html
 EOF
   tags = merge(var.tags, {
     Name = local.instance_name
@@ -38,7 +43,7 @@ resource "aws_lb_target_group" "tf_demo_tg" {
   name     = local.target_group_name
   port     = 80
   protocol = "HTTP"
-  vpc_id   = var.vpc_id
+  vpc_id   = data.aws_vpc.vpc.id
   health_check {
     port     = "80"
     path     = "/"
@@ -51,8 +56,6 @@ resource "aws_lb_listener" "front_end" {
   load_balancer_arn = aws_lb.tf-demo-lb.arn
   port              = "80"
   protocol          = "HTTP"
-  #   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  #   certificate_arn   = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"
 
   default_action {
     type             = "forward"
@@ -62,8 +65,9 @@ resource "aws_lb_listener" "front_end" {
 
 ## Attach instance created above to the Target Group so that traffic will be forwarded to it
 resource "aws_lb_target_group_attachment" "tf_demo_tg_attachment" {
+  count            = length(aws_instance.web_server) ## The number of attachments depends on the number of instances we created
   target_group_arn = aws_lb_target_group.tf_demo_tg.arn
-  target_id        = aws_instance.web_server.id
+  target_id        = aws_instance.web_server[count.index].id
   port             = 80
 }
 
@@ -78,4 +82,20 @@ resource "aws_route53_record" "tf-demo" {
     zone_id                = aws_lb.tf-demo-lb.zone_id
     evaluate_target_health = true
   }
+}
+
+resource "aws_route53_record" "tf-demo_provider_example" {
+  count    = var.environment == "dev" ? 1 : 0 ## Similar to above but using the workspace selection this time
+  provider = aws.aws_prod
+  zone_id  = data.aws_route53_zone.parent_zone[0].id
+  name     = "provider-example.${var.alternate_hosted_zone}"
+  type     = "A"
+
+  alias {
+    name                   = aws_lb.tf-demo-lb.dns_name
+    zone_id                = aws_lb.tf-demo-lb.zone_id
+    evaluate_target_health = true
+  }
+
+
 }
