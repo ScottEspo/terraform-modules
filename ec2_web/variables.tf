@@ -13,7 +13,7 @@ variable "hosted_zone" {
 variable "alternate_hosted_zone" {
   description = "Hosted Zone where you want to your new site to live"
   type        = string
-  default     = ""
+
 }
 variable "instance_type" {
   description = "instance type for your ec2 instance"
